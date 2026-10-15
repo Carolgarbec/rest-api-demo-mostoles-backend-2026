@@ -19,35 +19,14 @@ import com.example.spring_security_jwt.model.User;
 import com.example.spring_security_jwt.repository.RoleRepository;
 import com.example.spring_security_jwt.repository.UserRepository;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-
 @Configuration
 public class CreatesSamplesData {
 
-//    private final PresentationDao presentationDao;
-//
-//	CreatesSamplesData(PresentationDao presentationDao) {
-//		this.presentationDao = presentationDao;
-//	}
-	
-    @Bean
-    OpenAPI customOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
-        return new OpenAPI()
-            .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-            .components(new Components()
-                .addSecuritySchemes(securitySchemeName,
-                    new SecurityScheme()
-                        .name(securitySchemeName)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")
-                )
-            );
-    }
+    private final PresentationDao presentationDao;
+
+	CreatesSamplesData(PresentationDao presentationDao) {
+		this.presentationDao = presentationDao;
+	}
 
 	@SuppressWarnings("null")
 	@Bean

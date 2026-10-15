@@ -23,35 +23,35 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableMethodSecurity
 /**
- * La anotacion anterior permite securedEnable = true, jsr250Enabled = true y la
- * mas importante prePostEnabled = true
+ * La anotacion anterior permite securedEnable = true, 
+ * jsr250Enabled = true y la mas importante prePostEnabled = true
  * 
- * Que se resume a poder asegurar (securizar) directamente los metodos de los
- * controladores, es decir, donde se delegan las peticiones, concretamente los
- * endpoints
+ * Que se resume a poder asegurar (securizar) directamente los metodos
+ * de los controladores, es decir, donde se delegan las peticiones,
+ * concretamente los endpoints
  * 
  */
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-
+	
 	private final UserDetailsServiceImpl userDetailsService;
 	private final AuthEntryPointJwt unauthorizeHandle;
 	private final JwtUtils jwtUtils;
-
+	
 	@Bean
 	AuthTokenFilter authenticationJwtTokenFilter() {
-
+		
 		return new AuthTokenFilter(jwtUtils, userDetailsService);
 	}
-
+	
 	@SuppressWarnings("null")
 	@Bean
 	DaoAuthenticationProvider authenticationProvider() {
 
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-
+		
 		authProvider.setPasswordEncoder(passwordEncoder());
-
+		
 		return authProvider;
 	}
 
@@ -59,36 +59,36 @@ public class WebSecurityConfig {
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
+	
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) {
 		return authConfig.getAuthenticationManager();
 	}
-
-	// El bean siguiente es el que hay que saber personalizar para adaptarlo a
-	// nuestro proyecto
+	
+	// El bean siguiente es el que hay que saber personalizar para adaptarlo a nuestro proyecto
 	// todo lo demas es boilerplate (codigo repetitivo)
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) {
-
+		
 		http.csrf(csrf -> csrf.disable())
-				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizeHandle))
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth
-						// 1. Permitir acceso público a Swagger y OpenAPI
-						.requestMatchers(
-								"/v3/api-docs/**", 
-								"/swagger-ui/**", 
-								"/swagger-ui.html", 
-								"/api/auth/**")
-						.permitAll()
-						// 2. Cualquier otra petición requiere autenticación
-						.anyRequest().authenticated());
-
+			.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizeHandle))
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
+					.anyRequest().authenticated());
+		
 		http.authenticationProvider(authenticationProvider());
-
+		
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
+		
 		return http.build();
 	}
 }
+
+
+
+
+
+
+
+
+
